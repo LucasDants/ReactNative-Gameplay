@@ -11,6 +11,5 @@ export const styles = StyleSheet.create({
     fontFamily: theme.fonts.text400,
     marginRight: 4,
     fontSize: 13,
-    textAlign: 'center',
   },
 });
