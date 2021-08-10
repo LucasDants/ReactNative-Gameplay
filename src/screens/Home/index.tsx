@@ -46,15 +46,19 @@ export function Home() {
     categoryId === category ? setCategory('') : setCategory(categoryId);
   }
 
-  function handleAppointmentDetaisl() {
+  function handleAppointmentDetails() {
     navigation.navigate('AppointmentDetails');
+  }
+
+  function handleAppointmentCreate() {
+    navigation.navigate('AppointmentCreate');
   }
 
   return (
     <Background>
       <View style={styles.header}>
         <Profile />
-        <ButtonAdd />
+        <ButtonAdd onPress={handleAppointmentCreate} />
       </View>
       <CategorySelect
         categorySelected={category}
@@ -66,7 +70,7 @@ export function Home() {
           data={appointments}
           keyExtractor={item => item.id}
           renderItem={({item}) => (
-            <Appointment data={item} onPress={handleAppointmentDetaisl} />
+            <Appointment data={item} onPress={handleAppointmentDetails} />
           )}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => <ListDivider />}
