@@ -14,13 +14,8 @@ import CalendaSvg from '../../assets/calendar.svg';
 
 import {styles} from './styles';
 import {theme} from '../../global/styles/theme';
-
-export type GuildProps = {
-  owner: boolean;
-  name: string;
-  icon: string;
-  id: string;
-};
+import {GuildProps} from '../Guild';
+import LinearGradient from 'react-native-linear-gradient';
 
 export type AppointmentProps = {
   id: string;
@@ -37,12 +32,16 @@ type AppointmentScreenProps = TouchableOpacityProps & {
 export function Appointment({data, ...rest}: AppointmentScreenProps) {
   const [category] = categories.filter(item => item.id === data.category);
   const {owner} = data.guild;
-  const {primary, on} = theme.colors;
+  const {primary, on, secondary50, secondary70} = theme.colors;
 
   return (
     <TouchableOpacity {...rest}>
       <View style={styles.container}>
-        <GuildIcon urlImage={data.guild.icon} />
+        <LinearGradient
+          style={styles.guildIconContainer}
+          colors={[secondary50, secondary70]}>
+          <GuildIcon urlImage={data.guild.icon} />
+        </LinearGradient>
         <View style={styles.content}>
           <View style={styles.header}>
             <Text style={styles.title}>{data.guild.name}</Text>
