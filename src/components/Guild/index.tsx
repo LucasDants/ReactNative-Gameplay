@@ -26,7 +26,7 @@ type GuildScreenProps = TouchableOpacityProps & {
 export function Guild({data, ...rest}: GuildScreenProps) {
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.7} {...rest}>
-      <GuildIcon urlImage={data.icon} />
+      <GuildIcon guildId={data.id} iconId={data.icon} />
       <View style={styles.content}>
         <View>
           <Text style={styles.title}>{data.name}</Text>

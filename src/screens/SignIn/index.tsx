@@ -15,7 +15,7 @@ export function SignIn() {
     try {
       await signIn();
     } catch (error) {
-      Alert.alert(error);
+      Alert.alert(error.message);
     }
   }
 

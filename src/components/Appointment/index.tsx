@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Text,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-} from 'react-native';
+import {Text, View} from 'react-native';
 
 import {categories} from '../../utils/categories';
 import {GuildIcon} from '../GuildIcon';
@@ -16,6 +11,7 @@ import {styles} from './styles';
 import {theme} from '../../global/styles/theme';
 import {GuildProps} from '../Guild';
 import LinearGradient from 'react-native-linear-gradient';
+import {RectButton, RectButtonProps} from 'react-native-gesture-handler';
 
 export type AppointmentProps = {
   id: string;
@@ -25,7 +21,7 @@ export type AppointmentProps = {
   description: string;
 };
 
-type AppointmentScreenProps = TouchableOpacityProps & {
+type AppointmentScreenProps = RectButtonProps & {
   data: AppointmentProps;
 };
 
@@ -35,12 +31,12 @@ export function Appointment({data, ...rest}: AppointmentScreenProps) {
   const {primary, on, secondary50, secondary70} = theme.colors;
 
   return (
-    <TouchableOpacity {...rest}>
+    <RectButton {...rest}>
       <View style={styles.container}>
         <LinearGradient
           style={styles.guildIconContainer}
           colors={[secondary50, secondary70]}>
-          <GuildIcon urlImage={data.guild.icon} />
+          <GuildIcon guildId={data.guild.id} iconId={data.guild.icon} />
         </LinearGradient>
         <View style={styles.content}>
           <View style={styles.header}>
@@ -61,6 +57,6 @@ export function Appointment({data, ...rest}: AppointmentScreenProps) {
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </RectButton>
   );
 }

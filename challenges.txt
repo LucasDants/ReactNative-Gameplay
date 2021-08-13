@@ -1,0 +1,4 @@
+Fazer modal de logout
+validações no form
+excluir o agendamento de partidas
+push notification

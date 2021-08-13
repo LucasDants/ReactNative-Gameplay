@@ -1,13 +1,11 @@
 import React, {createContext, ReactNode, useState, useContext} from 'react';
-import {
-  SCOPE,
-  CLIENT_ID,
-  CDN_IMAGE,
-  REDIRECT_URI,
-  CLIENT_SECRET,
-} from '../configs';
+import {CLIENT_ID, REDIRECT_URL} from '@env';
+import {SCOPE, CDN_IMAGE} from '../configs';
 import {authorize, AuthorizeResult} from 'react-native-app-auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {api} from '../services/api';
+import {COLLECTION_USERS} from '../configs/storage';
+import {useEffect} from 'react';
 
 type User = {
   id: string;
@@ -22,6 +20,7 @@ type AuthContextData = {
   user: User;
   loading: boolean;
   signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
 };
 
 type AuthContextProviderProps = {
@@ -36,8 +35,7 @@ function AuthContextProvider({children}: AuthContextProviderProps) {
 
   const config = {
     clientId: CLIENT_ID,
-    clientSecret: CLIENT_SECRET,
-    redirectUrl: REDIRECT_URI,
+    redirectUrl: REDIRECT_URL,
     scopes: SCOPE,
     serviceConfiguration: {
       authorizationEndpoint: `${api.defaults.baseURL}/oauth2/authorize`,
@@ -50,27 +48,49 @@ function AuthContextProvider({children}: AuthContextProviderProps) {
     try {
       setLoading(true);
       const {accessToken} = (await authorize(config)) as AuthorizeResult;
-
       if (accessToken !== '') {
         api.defaults.headers.authorization = `Bearer ${accessToken}`;
 
         const userInfo = await api.get('/users/@me');
 
-        setUser({
+        const userData = {
           ...userInfo.data,
           firstName: userInfo.data.username.split(' ')[0],
           avatar: `${CDN_IMAGE}/avatars/${userInfo.data.id}/${userInfo.data.avatar}.png`,
           token: accessToken,
-        });
+        };
+
+        await AsyncStorage.setItem(COLLECTION_USERS, JSON.stringify(userData));
+        setUser(userData);
       }
-      setLoading(false);
     } catch {
       throw new Error('Não foi possível autenticar');
+    } finally {
+      setLoading(false);
     }
   }
 
+  async function signOut() {
+    setUser({} as User);
+    await AsyncStorage.removeItem(COLLECTION_USERS);
+  }
+
+  async function loadUserStorageData() {
+    const storage = await AsyncStorage.getItem(COLLECTION_USERS);
+
+    if (storage) {
+      const userLogged = JSON.parse(storage) as User;
+      api.defaults.headers.authorization = `Bearer ${userLogged.token}`;
+      setUser(userLogged);
+    }
+  }
+
+  useEffect(() => {
+    loadUserStorageData();
+  }, []);
+
   return (
-    <AuthContext.Provider value={{user, loading, signIn}}>
+    <AuthContext.Provider value={{user, loading, signIn, signOut}}>
       {children}
     </AuthContext.Provider>
   );
